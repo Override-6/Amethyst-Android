@@ -20,6 +20,7 @@
 
 static __thread gl_render_window_t* currentBundle;
 static EGLDisplay g_EglDisplay;
+static volatile bool headless_mode = false;
 
 bool gl_init() {
     if(!dlsym_EGL()) return false;
@@ -184,6 +185,7 @@ void gl_swap_buffers() {
         eglMakeCurrent_p(g_EglDisplay, currentBundle->surface, currentBundle->surface, currentBundle->context);
         currentBundle->state = STATE_RENDERER_ALIVE;
     }
+    if(headless_mode) return; // skip present when backgrounded
     if(currentBundle->surface != NULL)
         if(!eglSwapBuffers_p(g_EglDisplay, currentBundle->surface) && eglGetError_p() == EGL_BAD_SURFACE) {
             eglMakeCurrent_p(g_EglDisplay, EGL_NO_SURFACE, EGL_NO_SURFACE, EGL_NO_CONTEXT);
@@ -193,6 +195,16 @@ void gl_swap_buffers() {
             LOGI("The window has died, awaiting window change");
     }
 
+}
+
+void gl_set_headless(bool headless) {
+    headless_mode = headless;
+    if(pojav_environ->mainWindowBundle == NULL) return;
+    gl_render_window_t* bundle = (gl_render_window_t*)pojav_environ->mainWindowBundle;
+    // Switch to 1x1 pbuffer when headless; restore real window on resume.
+    // The actual surface swap happens on the render thread in the next gl_swap_buffers call.
+    bundle->newNativeSurface = headless ? NULL : pojav_environ->pojavWindow;
+    bundle->state = STATE_RENDERER_NEW_WINDOW;
 }
 
 void gl_setup_window() {

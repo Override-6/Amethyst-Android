@@ -337,11 +337,13 @@ public class MainActivity extends BaseActivity implements ControlButtonMenuListe
     protected void onStart() {
         super.onStart();
         CallbackBridge.nativeSetWindowAttrib(LwjglGlfwKeycode.GLFW_VISIBLE, 1);
+        try { JREUtils.setHeadlessRendering(false); } catch (UnsatisfiedLinkError ignored) {}
     }
 
     @Override
     protected void onStop() {
         CallbackBridge.nativeSetWindowAttrib(LwjglGlfwKeycode.GLFW_VISIBLE, 0);
+        try { JREUtils.setHeadlessRendering(true); } catch (UnsatisfiedLinkError ignored) {}
         super.onStop();
     }
 

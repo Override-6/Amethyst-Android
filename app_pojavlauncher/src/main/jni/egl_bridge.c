@@ -27,6 +27,7 @@
 #include "utils.h"
 #include "ctxbridges/bridge_tbl.h"
 #include "ctxbridges/osm_bridge.h"
+#include "ctxbridges/gl_bridge.h"
 
 #define GLFW_CLIENT_API 0x22001
 /* Consider GLFW_NO_API as Vulkan API */
@@ -256,5 +257,13 @@ Java_org_lwjgl_vulkan_VK_getVulkanDriverHandle(ABI_COMPAT JNIEnv *env, ABI_COMPA
 
 EXTERNAL_API void pojavSwapInterval(int interval) {
     br_swap_interval(interval);
+}
+
+JNIEXPORT void JNICALL
+Java_net_kdt_pojavlaunch_utils_JREUtils_setHeadlessRendering(ABI_COMPAT JNIEnv *env, ABI_COMPAT jclass clazz, jboolean headless) {
+    if(pojav_environ->config_renderer == RENDERER_GL4ES) {
+        gl_set_headless((bool)headless);
+    }
+    // OSMesa/Vulkan renderers don't need surface management; headless is handled in the Java GLFW layer.
 }
 

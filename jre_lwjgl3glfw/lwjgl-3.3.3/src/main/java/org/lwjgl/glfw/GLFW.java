@@ -960,6 +960,12 @@ public class GLFW
     }
 
     public static void glfwSwapBuffers(@NativeType("GLFWwindow *") long window) {
+        if (glfwGetWindowAttrib(window, GLFW_VISIBLE) == 0) {
+            // App is backgrounded: skip the native buffer swap and gate the render loop
+            // to ~10 FPS so the game loop (ticks, mods) keeps running at low CPU cost.
+            try { Thread.sleep(100); } catch (InterruptedException e) { Thread.currentThread().interrupt(); }
+            return;
+        }
         long __functionAddress = Functions.SwapBuffers;
         invokePV(window, __functionAddress);
     }
