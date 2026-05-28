@@ -197,6 +197,11 @@ void gl_swap_buffers() {
 
 }
 
+JNIEXPORT jboolean JNICALL
+Java_org_lwjgl_glfw_GLFW_nativeIsHeadless(JNIEnv *env, jclass clazz) {
+    return (jboolean)headless_mode;
+}
+
 void gl_set_headless(bool headless) {
     headless_mode = headless;
     if(pojav_environ->mainWindowBundle == NULL) return;

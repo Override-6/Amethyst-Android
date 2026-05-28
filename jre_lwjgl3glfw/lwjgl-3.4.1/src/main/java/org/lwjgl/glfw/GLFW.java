@@ -992,9 +992,19 @@ public class GLFW
         invokePV(window, __functionAddress);
     }
 
+    private static native boolean nativeIsHeadless();
+
+    public static boolean isHeadless() {
+        try {
+            return nativeIsHeadless();
+        } catch (UnsatisfiedLinkError e) {
+            return false;
+        }
+    }
+
     public static void glfwSwapBuffers(@NativeType("GLFWwindow *") long window) {
-        if (glfwGetWindowAttrib(window, GLFW_VISIBLE) == 0) {
-            return; // skip the native buffer swap when backgrounded
+        if (isHeadless()) {
+            return;
         }
         long __functionAddress = Functions.SwapBuffers;
         invokePV(window, __functionAddress);
