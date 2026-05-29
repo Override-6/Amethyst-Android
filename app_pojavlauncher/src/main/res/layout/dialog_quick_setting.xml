@@ -209,8 +209,20 @@
         android:text="@string/mcl_setting_title_grab_mouse"
 
 
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/editGestureDelay_seekbar"
+        tools:ignore="UseSwitchCompatOrMaterialXml" />
+
+    <!-- Rendering toggle: pause GPU rendering while keeping pathfinding alive -->
+    <Switch
+        android:id="@+id/checkboxPauseRendering"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/_36sdp"
+        android:text="@string/quick_setting_pause_rendering"
+
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/always_grab_mouse_side_dialog"
         tools:ignore="UseSwitchCompatOrMaterialXml" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

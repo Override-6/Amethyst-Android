@@ -22,6 +22,7 @@ import com.kdt.CustomSeekbar;
 
 import net.kdt.pojavlaunch.R;
 import net.kdt.pojavlaunch.Tools;
+import net.kdt.pojavlaunch.utils.JREUtils;
 import net.kdt.pojavlaunch.utils.interfaces.SimpleSeekBarListener;
 
 /**
@@ -31,8 +32,10 @@ import net.kdt.pojavlaunch.utils.interfaces.SimpleSeekBarListener;
 public abstract class QuickSettingSideDialog extends com.kdt.SideDialogView {
 
     private SharedPreferences.Editor mEditor;
+    private static boolean sRenderingPaused = false;
+
     @SuppressLint("UseSwitchCompatOrMaterialCode")
-    private Switch mGyroSwitch, mGyroXSwitch, mGyroYSwitch, mGestureSwitch, mMouseGrabSwitch;
+    private Switch mGyroSwitch, mGyroXSwitch, mGyroYSwitch, mGestureSwitch, mMouseGrabSwitch, mPauseRenderingSwitch;
     private CustomSeekbar mGyroSensitivityBar, mMouseSpeedBar, mGestureDelayBar, mResolutionBar;
     private TextView mGyroSensitivityText, mGyroSensitivityDisplayText, mMouseSpeedText, mGestureDelayText, mGestureDelayDisplayText, mResolutionText;
 
@@ -67,6 +70,7 @@ public abstract class QuickSettingSideDialog extends com.kdt.SideDialogView {
         mGyroYSwitch = mDialogContent.findViewById(R.id.checkboxGyroY);
         mGestureSwitch = mDialogContent.findViewById(R.id.checkboxGesture);
         mMouseGrabSwitch = mDialogContent.findViewById(R.id.always_grab_mouse_side_dialog);
+        mPauseRenderingSwitch = mDialogContent.findViewById(R.id.checkboxPauseRendering);
 
         mGyroSensitivityBar = mDialogContent.findViewById(R.id.editGyro_seekbar);
         mMouseSpeedBar = mDialogContent.findViewById(R.id.editMouseSpeed_seekbar);
@@ -129,6 +133,12 @@ public abstract class QuickSettingSideDialog extends com.kdt.SideDialogView {
         mMouseGrabSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> {
             PREF_MOUSE_GRAB_FORCE = isChecked;
             mEditor.putBoolean("always_grab_mouse", isChecked);
+        });
+
+        mPauseRenderingSwitch.setChecked(sRenderingPaused);
+        mPauseRenderingSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            sRenderingPaused = isChecked;
+            try { JREUtils.setHeadlessRendering(isChecked); } catch (UnsatisfiedLinkError ignored) {}
         });
 
         mGyroSensitivityBar.setOnSeekBarChangeListener((SimpleSeekBarListener) (seekBar, progress, fromUser) -> {
@@ -217,6 +227,7 @@ public abstract class QuickSettingSideDialog extends com.kdt.SideDialogView {
         mGyroYSwitch.setOnCheckedChangeListener(null);
         mGestureSwitch.setOnCheckedChangeListener(null);
         mMouseGrabSwitch.setOnCheckedChangeListener(null);
+        mPauseRenderingSwitch.setOnCheckedChangeListener(null);
 
         mGyroSensitivityBar.setOnSeekBarChangeListener(null);
         mMouseSpeedBar.setOnSeekBarChangeListener(null);
